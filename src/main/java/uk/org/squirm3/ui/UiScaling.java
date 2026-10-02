@@ -2,6 +2,7 @@ package uk.org.squirm3.ui;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,7 +16,8 @@ import java.util.regex.Pattern;
  *
  * On Windows and macOS the JDK scales Swing applications automatically; on
  * Linux/X11 it does not, so this helper probes the physical DPI of the
- * connected outputs (xrandr, xdpyinfo, sysfs DRM connectors) and sets
+ * connected outputs (xrandr, EDID blocks via sysfs DRM connectors, xdpyinfo)
+ * and sets
  * {@code sun.java2d.uiScale} before the AWT toolkit is initialized. The
  * property multiplies every font, icon, gap and component size throughout the
  * UI, including the simulation canvas.
@@ -27,8 +29,10 @@ public final class UiScaling {
 
     /** Logical (unscaled) reference DPI used by Java2D. */
     private static final double REFERENCE_DPI = 96.0;
-    /** Fallback reference: logical height corresponding to a plain Full-HD screen. */
-    private static final double REFERENCE_HEIGHT_PX = 1080.0;
+    /** Byte offsets of the display size in centimetres inside an EDID block. */
+    private static final int EDID_WIDTH_CM_OFFSET = 21;
+    private static final int EDID_HEIGHT_CM_OFFSET = 22;
+    private static final int EDID_MIN_LENGTH = EDID_HEIGHT_CM_OFFSET + 1;
     private static final double MIN_SCALE = 1.0;
     private static final double MAX_SCALE = 3.0;
     /** Detection noise below this factor is ignored so 96-DPI screens stay unscaled. */
@@ -78,11 +82,6 @@ public final class UiScaling {
         if (dpi != null && dpi.intValue() > 0) {
             return Double.valueOf(clamp(dpi.doubleValue() / REFERENCE_DPI));
         }
-        final Integer heightPixels = probeScreenHeightPixels();
-        if (heightPixels != null && heightPixels.intValue() > 0) {
-            return Double.valueOf(
-                    clamp(heightPixels.doubleValue() / REFERENCE_HEIGHT_PX));
-        }
         return null;
     }
 
@@ -98,33 +97,49 @@ public final class UiScaling {
 
     private static Integer probeDpi() {
         final Integer dpi = xrandrDpi();
-        return dpi != null ? dpi : xdpyinfoDpi();
+        if (dpi != null) {
+            return dpi;
+        }
+        final Integer edidDpi = edidDpi();
+        return edidDpi != null ? edidDpi : xdpyinfoDpi();
     }
 
     /**
      * Computes the physical DPI of the connected outputs from their native
-     * mode and their reported size in millimetres. Returns the largest value
-     * so the primary panel wins over any low-DPI external display.
+     * mode and their reported size in millimetres. The output flagged
+     * "primary" wins; otherwise the largest DPI is used so the panel with the
+     * highest density determines the global scale.
      */
     private static Integer xrandrDpi() {
         try {
             final Process process = new ProcessBuilder("xrandr").start();
             int maxDpi = 0;
             int widthMm = 0;
+            boolean outputIsPrimary = false;
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    final Matcher connected = XRANDR_CONNECTED.matcher(line);
-                    if (connected.find()) {
-                        widthMm = Integer.parseInt(connected.group(1));
+                    // Non-indented lines start a new screen or output block.
+                    if (!line.startsWith(" ") && !line.startsWith("\t")) {
+                        widthMm = 0;
+                        outputIsPrimary = false;
+                        final Matcher connected = XRANDR_CONNECTED
+                                .matcher(line);
+                        if (connected.find()) {
+                            widthMm = Integer.parseInt(connected.group(1));
+                            outputIsPrimary = line.contains("primary");
+                        }
                         continue;
                     }
                     final Matcher mode = XRANDR_NATIVE_MODE.matcher(line);
                     if (mode.find() && widthMm > 0) {
                         final int widthPx = Integer.parseInt(mode.group(1));
-                        final int dpi = Math
-                                .round((float) (widthPx * MM_PER_INCH / widthMm));
+                        final int dpi = Math.round(
+                                (float) (widthPx * MM_PER_INCH / widthMm));
+                        if (outputIsPrimary) {
+                            return Integer.valueOf(dpi);
+                        }
                         maxDpi = Math.max(maxDpi, dpi);
                         widthMm = 0;
                     }
@@ -161,37 +176,71 @@ public final class UiScaling {
     }
 
     /**
-     * Reads the native mode of the largest connected DRM connector, e.g.
-     * {@code /sys/class/drm/card0-eDP-1/modes} first line "2560x1600".
+     * Computes the physical DPI of connected DRM connectors by combining the
+     * native mode ({@code /sys/class/drm/card0-eDP-1/modes}) with the display
+     * size advertised in the EDID block
+     * ({@code /sys/class/drm/card0-eDP-1/edid}).
+     * This reports the real panel size, unlike a pixel-height heuristic which
+     * cannot tell a 13-inch 4K laptop panel from a 55-inch 4K television.
      */
-    private static Integer probeScreenHeightPixels() {
+    private static Integer edidDpi() {
         final File drm = new File("/sys/class/drm");
         final File[] connectors = drm.listFiles();
         if (connectors == null) {
             return null;
         }
-        int maxHeight = 0;
+        int maxDpi = 0;
         for (final File connector : connectors) {
             if (!"connected"
                     .equals(readFirstLine(new File(connector, "status")))) {
                 continue;
             }
-            final String mode = readFirstLine(new File(connector, "modes"));
-            if (mode == null) {
-                continue;
-            }
-            final int x = mode.indexOf('x');
-            if (x < 0) {
-                continue;
-            }
-            try {
-                maxHeight = Math.max(maxHeight,
-                        Integer.parseInt(mode.substring(x + 1).trim()));
-            } catch (NumberFormatException e) {
-                // skip unparsable mode line
+            final Integer dpi = connectorDpi(connector);
+            if (dpi != null) {
+                maxDpi = Math.max(maxDpi, dpi.intValue());
             }
         }
-        return maxHeight > 0 ? Integer.valueOf(maxHeight) : null;
+        return maxDpi > 0 ? Integer.valueOf(maxDpi) : null;
+    }
+
+    private static Integer connectorDpi(final File connector) {
+        final String mode = readFirstLine(new File(connector, "modes"));
+        final byte[] edid = readEdid(new File(connector, "edid"));
+        if (mode == null || edid == null) {
+            return null;
+        }
+        final int x = mode.indexOf('x');
+        if (x < 0) {
+            return null;
+        }
+        try {
+            final int widthPx = Integer.parseInt(mode.substring(0, x).trim());
+            final int widthCm = edid[EDID_WIDTH_CM_OFFSET] & 0xFF;
+            if (widthPx <= 0 || widthCm <= 0) {
+                return null;
+            }
+            return Integer.valueOf(
+                    Math.round((float) (widthPx * MM_PER_INCH / (widthCm * 10.0))));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private static byte[] readEdid(final File file) {
+        final byte[] edid = new byte[EDID_MIN_LENGTH];
+        try (FileInputStream in = new FileInputStream(file)) {
+            int offset = 0;
+            while (offset < edid.length) {
+                final int read = in.read(edid, offset, edid.length - offset);
+                if (read < 0) {
+                    break;
+                }
+                offset += read;
+            }
+            return offset >= EDID_MIN_LENGTH ? edid : null;
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     private static String readFirstLine(final File file) {

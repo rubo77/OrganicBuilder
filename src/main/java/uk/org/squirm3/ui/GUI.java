@@ -102,8 +102,9 @@ public class GUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(contentPane);
         SwingUtilities.updateComponentTreeUI(frame);
+        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         // Some X11 window managers ignore the extended state while the frame
-        // is not yet mapped, so it is applied once the window is opened.
+        // is not yet mapped, so it is re-applied once the window is opened.
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(final WindowEvent event) {

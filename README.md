@@ -54,7 +54,7 @@ Windows: `dir target\*-jar-with-dependencies.jar`
 
 **Run the app**
 ```
-java -jar target/organicbuilder-*-jar-with-dependencies.jar
+java -jar target/organicbuilder-1.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 (On Windows, double-clicking the jar also works in most setups.)
 
