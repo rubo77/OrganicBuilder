@@ -7,6 +7,7 @@ For more information, please visit [Organic Buidler website](https://bertranddec
 
 You are welcome to watch, fork the project and create pull requests. Contact me if you have any questions.
 
+![Organic Builder](screenshot.png)
 
 ## Prerequisites
 
