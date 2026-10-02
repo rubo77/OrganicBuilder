@@ -21,3 +21,6 @@ the java app starts in fullscreen mode; when you start moving it, it shrinks to 
 ## 26-10-03 01:30
 commit everything, then change the whole design to a more modern design.
 
+## 26-10-03 01:37
+new screenshot in the readme.
+

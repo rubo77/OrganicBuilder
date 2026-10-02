@@ -1,6 +1,10 @@
 package uk.org.squirm3.springframework;
 
+import javax.swing.JFrame;
+
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.formdev.flatlaf.FlatIntelliJLaf;
 
 import uk.org.squirm3.ui.UiScaling;
 
@@ -24,6 +28,8 @@ public class StandaloneSpringLauncher {
      */
     public static void main(final String... args) {
         UiScaling.adaptToScreenResolution();
+        FlatIntelliJLaf.setup();
+        JFrame.setDefaultLookAndFeelDecorated(true);
         new ClassPathXmlApplicationContext(DEFAULT_APPLICATION_CONTEXT);
     }
 

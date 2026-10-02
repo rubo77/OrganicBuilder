@@ -68,6 +68,11 @@
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>3.7.2</version>
+		</dependency>
 
 		<!-- test -->
 		<dependency>
@@ -233,6 +238,11 @@
 						<manifest>
 							<mainClass>uk.org.squirm3.springframework.StandaloneSpringLauncher</mainClass>
 						</manifest>
+						<!-- FlatLaf ships Java 9+ classes under META-INF/versions;
+						     without this flag the JVM ignores them in the fat jar. -->
+						<manifestEntries>
+							<Multi-Release>true</Multi-Release>
+						</manifestEntries>
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
