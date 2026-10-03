@@ -9,6 +9,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,6 +23,7 @@ import uk.org.squirm3.ui.collider.AtomsPanel;
 import uk.org.squirm3.ui.level.CurrentLevelPanel;
 import uk.org.squirm3.ui.reaction.ReactionConstructorPanel;
 import uk.org.squirm3.ui.reaction.ReactionListPanel;
+import uk.org.squirm3.ui.theme.UiThemes;
 import uk.org.squirm3.ui.toolbar.ToolBarPanel;
 
 /**
@@ -34,14 +36,15 @@ public class GUI {
             final CurrentLevelPanel currentLevelPanel,
             final ReactionListPanel reactionListPanel,
             final ReactionConstructorPanel reactionConstructorPanel,
-            final AtomsPanel collisionsPanel, final ToolBarPanel toolBarPanel) {
+            final AtomsPanel collisionsPanel, final ToolBarPanel toolBarPanel,
+            final Action aboutAction) {
 
         final JSplitPane reactionsPane = createReactionsPane(reactionListPanel,
                 reactionConstructorPanel);
         final JSplitPane rootComponent = buildRootComponent(collisionsPanel,
                 currentLevelPanel, reactionsPane);
         final JPanel contentPane = buildContentPane(toolBarPanel, rootComponent);
-        buildMainFrame(messageSource, contentPane);
+        buildMainFrame(messageSource, contentPane, aboutAction);
     }
 
     /**
@@ -98,10 +101,11 @@ public class GUI {
      * Setup the whole GUI, title, size and exit behavior.
      */
     private void buildMainFrame(final MessageSource messageSource,
-            final JPanel contentPane) {
+            final JPanel contentPane, final Action aboutAction) {
         final JFrame frame = new JFrame(Messages.localize("application.title",
                 messageSource));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setJMenuBar(UiThemes.createMenuBar(messageSource, aboutAction));
         frame.setContentPane(contentPane);
         SwingUtilities.updateComponentTreeUI(frame);
         // The window manager restores these bounds when the maximized

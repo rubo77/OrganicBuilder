@@ -15,7 +15,7 @@
 
 	<name>Organic Builder</name>
 	<description>Artificial chemistry low-level simulation : make up our own rules of construction to simulate open-ended, creative evolution.</description>
-	<url>http://organicbuilder.sourceforge.net/</url>
+	<url>https://github.com/BertrandDechoux/OrganicBuilder</url>
 	<inceptionYear>2002</inceptionYear>
 
 	<licenses>
@@ -71,6 +71,11 @@
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
+			<version>3.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-extras</artifactId>
 			<version>3.7.2</version>
 		</dependency>
 
