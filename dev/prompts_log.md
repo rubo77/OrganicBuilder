@@ -24,3 +24,13 @@ commit everything, then change the whole design to a more modern design.
 ## 26-10-03 01:37
 new screenshot in the readme.
 
+## 26-10-04
+swap the buttons for modern pause play reset next previous ... and a help icon top right. also add more themes, selectable in a system menu. if possible create one theme that looks exactly like evoloom.
+
+## 26-10-04
+the "system" menu must be called "options", the help button in the top right can be removed, instead a help menu in the window bar next to Options with an Info item. the link to the repo in the popup must be clickable.
+
+the themes flat light, dark light should be removed from the menu but stay in the code for later.
+
+evoloom must be completely changed with the borders like evoloom, see screenshot. this is how evoloom should look.
+
