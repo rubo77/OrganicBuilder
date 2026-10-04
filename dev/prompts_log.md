@@ -64,3 +64,7 @@ collapse bottom frame must also go, only collapse top pane is useful to minimize
 ## 26-10-04 12:15
 when still in the first introduction step, the button must show "start tests" or similar instead of "evaluate", and on the first one it must not evaluate but directly switch to point 1.
 
+## 26-10-04 13:00
+the add button is now too short, before it was the whole width of the panel, now it is much too short again, it should take up two thirds of the panel width so everything fits on it. see ec977820 — that was too wide.
+
+
