@@ -40,3 +40,12 @@ is the app already multilingual? if yes, add a language selection to the options
 ## 26-10-04 01:25
 when I run mvn clean test: ActionConfigurerIntegrationTest throws "Uncaught error fetching image" NullPointerException (URLImageSource, url is null).
 
+## 26-10-04 08:15
+there are lots of encoding errors in the French, except for the explanation text "Bonjour. Pour utiliser l'éditeu..." everything is wrongly encoded in the menu and the popup message for restart.
+
+## 26-10-04 08:40
+in the theme selection only flat intellij and evoloom are shown, but selecting evoloom gives dark intellij I think. add dark-intellij back to the menu — they should still be in the code, just reactivate in the menu, name them correctly and in the right order.
+
+## 26-10-04 11:30
+menu.theme.intellij must be called Light; menu.theme.light must also be called light in english, properly translated in french; menu.theme.darcula = Dark, menu.theme.evoloom must also be called dark, translated into french.
+

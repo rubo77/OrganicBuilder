@@ -39,14 +39,14 @@ public final class UiSettings {
     private static final Preferences PREFERENCES = Preferences.userRoot()
             .node("/uk/org/squirm3/ui/theme");
 
-    // Hidden themes stay registered for later use; they apply when their id
-    // is selected in the preferences.
+    // Hidden themes stay registered for later use; they apply when their
+    // id is selected in the preferences.
     private static final List<Theme> THEMES = Arrays.asList(
             new Theme("intellij", "menu.theme.intellij", true,
                     FlatIntelliJLaf::new),
             new Theme("light", "menu.theme.light", false, FlatLightLaf::new),
             new Theme("dark", "menu.theme.dark", false, FlatDarkLaf::new),
-            new Theme("darcula", "menu.theme.darcula", false,
+            new Theme("darcula", "menu.theme.darcula", true,
                     FlatDarculaLaf::new),
             new Theme("evoloom", "menu.theme.evoloom", true, EvoloomLaf::new));
 
