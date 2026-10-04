@@ -34,3 +34,9 @@ the themes flat light, dark light should be removed from the menu but stay in th
 
 evoloom must be completely changed with the borders like evoloom, see screenshot. this is how evoloom should look.
 
+## 26-10-04 01:10
+is the app already multilingual? if yes, add a language selection to the options.
+
+## 26-10-04 01:25
+when I run mvn clean test: ActionConfigurerIntegrationTest throws "Uncaught error fetching image" NullPointerException (URLImageSource, url is null).
+

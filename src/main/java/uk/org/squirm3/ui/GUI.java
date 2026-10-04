@@ -23,7 +23,6 @@ import uk.org.squirm3.ui.collider.AtomsPanel;
 import uk.org.squirm3.ui.level.CurrentLevelPanel;
 import uk.org.squirm3.ui.reaction.ReactionConstructorPanel;
 import uk.org.squirm3.ui.reaction.ReactionListPanel;
-import uk.org.squirm3.ui.theme.UiThemes;
 import uk.org.squirm3.ui.toolbar.ToolBarPanel;
 
 /**
@@ -105,7 +104,8 @@ public class GUI {
         final JFrame frame = new JFrame(Messages.localize("application.title",
                 messageSource));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setJMenuBar(UiThemes.createMenuBar(messageSource, aboutAction));
+        frame.setJMenuBar(UiSettings.createMenuBar(messageSource,
+                aboutAction));
         frame.setContentPane(contentPane);
         SwingUtilities.updateComponentTreeUI(frame);
         // The window manager restores these bounds when the maximized
