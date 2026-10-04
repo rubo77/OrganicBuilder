@@ -55,7 +55,8 @@ public final class UiSettings {
     private static final List<Language> LANGUAGES = Arrays.asList(
             new Language(null, "menu.language.system"),
             new Language(Locale.ENGLISH, "menu.language.en"),
-            new Language(Locale.FRANCE, "menu.language.fr"));
+            new Language(Locale.FRANCE, "menu.language.fr"),
+            new Language(Locale.GERMANY, "menu.language.de"));
 
     private static final Theme DEFAULT_THEME = THEMES.get(0);
     private static final Language DEFAULT_LANGUAGE = LANGUAGES.get(0);

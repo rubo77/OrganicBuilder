@@ -49,3 +49,15 @@ in the theme selection only flat intellij and evoloom are shown, but selecting e
 ## 26-10-04 11:30
 menu.theme.intellij must be called Light; menu.theme.light must also be called light in english, properly translated in french; menu.theme.darcula = Dark, menu.theme.evoloom must also be called dark, translated into french.
 
+## 26-10-04 11:35
+commit everything, then add a german translation.
+
+## 26-10-04 11:45
+ReactionConstructorPanel setupAddReactionButton: the button is too wide, it must be half as wide and next to it a label "add", "Hinzufügen", ...
+
+## 26-10-04 11:50
+the small button to minimize and maximize the reactions list must go.
+
+## 26-10-04 12:05
+collapse bottom frame must also go, only collapse top pane is useful to minimize the introduction, the title text must also be different: "collapse tutorial" and when minimized, instead of "expand top pane" it must say "expand tutorial".
+

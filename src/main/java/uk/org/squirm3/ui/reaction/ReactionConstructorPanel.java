@@ -1,7 +1,6 @@
 package uk.org.squirm3.ui.reaction;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -79,11 +78,6 @@ public class ReactionConstructorPanel extends JPanel {
             final MessageSource messageSource, final ImageIcon addIcon) {
         addReaction = new JButton(addIcon);
         addReaction.setMargin(new Insets(0, 0, 0, 0));
-        // The button shows the resulting reaction (e.g. "a0+c0=>a1c1"), so it
-        // is stretched to the panel width instead of staying icon-sized.
-        addReaction.setAlignmentX(Component.CENTER_ALIGNMENT);
-        addReaction.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                addReaction.getPreferredSize().height));
         addReaction.setToolTipText(Messages.localize("reactions.add.tooltip",
                 messageSource));
         addReaction.addActionListener(new ActionListener() {
@@ -93,7 +87,11 @@ public class ReactionConstructorPanel extends JPanel {
                         .singleton(createReactionFromEditor()));
             }
         });
-        add(addReaction);
+        final JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        row.add(addReaction);
+        row.add(new JLabel(
+                Messages.localize("reactions.add", messageSource)));
+        add(row);
     }
 
     private Reaction createReactionFromEditor() {

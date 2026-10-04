@@ -18,6 +18,8 @@ import javax.swing.SwingUtilities;
 
 import org.springframework.context.MessageSource;
 
+import com.formdev.flatlaf.FlatClientProperties;
+
 import uk.org.squirm3.springframework.Messages;
 import uk.org.squirm3.ui.collider.AtomsPanel;
 import uk.org.squirm3.ui.level.CurrentLevelPanel;
@@ -40,8 +42,8 @@ public class GUI {
 
         final JSplitPane reactionsPane = createReactionsPane(reactionListPanel,
                 reactionConstructorPanel);
-        final JSplitPane rootComponent = buildRootComponent(collisionsPanel,
-                currentLevelPanel, reactionsPane);
+        final JSplitPane rootComponent = buildRootComponent(messageSource,
+                collisionsPanel, currentLevelPanel, reactionsPane);
         final JPanel contentPane = buildContentPane(toolBarPanel, rootComponent);
         buildMainFrame(messageSource, contentPane, aboutAction);
     }
@@ -64,19 +66,30 @@ public class GUI {
                 }
             }
         });
-        reactionsPane.setOneTouchExpandable(true);
         return reactionsPane;
     }
 
     /**
      * The main component (without the toolbar)
      */
-    private JSplitPane buildRootComponent(final JComponent collisionsPanel,
-            final JPanel currentLevelPanel, final JSplitPane reactionsPane) {
+    private JSplitPane buildRootComponent(final MessageSource messageSource,
+            final JComponent collisionsPanel, final JPanel currentLevelPanel,
+            final JSplitPane reactionsPane) {
         final JSplitPane leftComponent = new JSplitPane(
                 JSplitPane.VERTICAL_SPLIT, true, currentLevelPanel,
                 reactionsPane);
         leftComponent.setOneTouchExpandable(true);
+        // Only the tutorial pane can be collapsed; collapsing the
+        // reactions pane below it is not useful.
+        leftComponent.putClientProperty(
+                FlatClientProperties.SPLIT_PANE_EXPANDABLE_SIDE,
+                FlatClientProperties.SPLIT_PANE_EXPANDABLE_SIDE_RIGHT);
+        leftComponent.putClientProperty(
+                "SplitPaneDivider.collapseTopToolTipText",
+                Messages.localize("level.collapse.tooltip", messageSource));
+        leftComponent.putClientProperty(
+                "SplitPaneDivider.expandTopToolTipText",
+                Messages.localize("level.expand.tooltip", messageSource));
         final JSplitPane rootComponent = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true, leftComponent,
                 collisionsPanel);
