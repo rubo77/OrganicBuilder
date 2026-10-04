@@ -61,3 +61,6 @@ the small button to minimize and maximize the reactions list must go.
 ## 26-10-04 12:05
 collapse bottom frame must also go, only collapse top pane is useful to minimize the introduction, the title text must also be different: "collapse tutorial" and when minimized, instead of "expand top pane" it must say "expand tutorial".
 
+## 26-10-04 12:15
+when still in the first introduction step, the button must show "start tests" or similar instead of "evaluate", and on the first one it must not evaluate but directly switch to point 1.
+
